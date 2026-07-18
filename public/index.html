@@ -3,118 +3,141 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="theme-color" content="#09080d">
+  <meta name="theme-color" content="#120a08">
   <meta name="description" content="十三号牌桌：以七格牌河和牌型连锁为核心的扑克肉鸽战斗样品。">
   <title>十三号牌桌 · Table 13 Mini</title>
   <link rel="stylesheet" href="./css/game.css">
 </head>
 <body>
-  <a class="skip-link" href="#game">跳到游戏</a>
+  <a class="skip-link" href="#game">跳到牌桌</a>
   <canvas id="fx" aria-hidden="true"></canvas>
-  <div class="noise" aria-hidden="true"></div>
+  <div class="grain" aria-hidden="true"></div>
+  <div class="vignette" aria-hidden="true"></div>
 
-  <header class="topbar">
+  <header class="game-bar">
     <div class="brand" aria-label="十三号牌桌">
-      <span class="brand-mark">13</span>
-      <span><strong>十三号牌桌</strong><small>TABLE THIRTEEN · MINI</small></span>
+      <span class="brand-seal">XIII</span>
+      <span class="brand-copy"><b>十三号牌桌</b><small>THE THIRTEENTH TABLE</small></span>
     </div>
-    <div class="run-meta">
-      <span>赌局 <b id="roundLabel">1 / 3</b></span>
+    <div class="run-progress" aria-label="游戏进度">
+      <span>牌桌 <b id="roundLabel">1 / 3</b></span>
+      <i aria-hidden="true"></i>
       <span>回合 <b id="turnLabel">1</b></span>
-      <button class="icon-btn" id="helpBtn" aria-label="查看玩法说明">?</button>
     </div>
+    <nav class="utility-nav" aria-label="游戏功能">
+      <button id="deckBtn" class="utility-btn" type="button"><span aria-hidden="true">▥</span><b>牌组</b></button>
+      <button id="helpBtn" class="utility-btn" type="button"><span aria-hidden="true">?</span><b>规则</b></button>
+    </nav>
   </header>
 
-  <main id="game" class="game-shell">
-    <section class="enemy-panel panel" aria-labelledby="enemyName">
-      <div class="enemy-avatar" aria-hidden="true"><span>♜</span></div>
-      <div class="enemy-info">
-        <div class="eyebrow">当前赌客</div>
-        <div class="enemy-title-row">
-          <h1 id="enemyName">催债人</h1>
-          <span class="status-chip" id="enemyStatus">等待出牌</span>
-        </div>
-        <div class="bar-row">
-          <div class="health-bar" role="progressbar" aria-label="敌人生命" aria-valuemin="0" aria-valuemax="80" aria-valuenow="80">
-            <span id="enemyHealthBar"></span>
-          </div>
+  <main id="game" class="game-stage">
+    <section class="opponent-zone" aria-labelledby="enemyName">
+      <div class="spotlight" aria-hidden="true"></div>
+      <div class="opponent-portrait" id="enemyPortrait" aria-hidden="true">
+        <div class="portrait-halo"></div>
+        <div class="portrait-head"><i></i></div>
+        <div class="portrait-body"></div>
+        <span class="portrait-suit">♦</span>
+      </div>
+      <div class="opponent-copy">
+        <span class="chapter-label">第一席 · 债务之桌</span>
+        <h1 id="enemyName">催债人</h1>
+        <blockquote id="enemyQuote">“每一张牌，都要付利息。”</blockquote>
+      </div>
+      <div class="enemy-hud">
+        <div class="enemy-health-line">
+          <span class="health-symbol">♥</span>
+          <div class="enemy-health-track" role="progressbar" aria-label="敌人生命" aria-valuemin="0" aria-valuemax="80" aria-valuenow="80"><span id="enemyHealthBar"></span></div>
           <b id="enemyHealthText">80 / 80</b>
         </div>
-      </div>
-      <div class="intent-card" aria-live="polite">
-        <span class="intent-icon" id="intentIcon">♦</span>
-        <div><small>下一步意图</small><strong id="intentTitle">收债</strong><p id="intentText">造成 8 点伤害</p></div>
-      </div>
-    </section>
-
-    <section class="table panel" aria-labelledby="riverTitle">
-      <div class="table-heading">
-        <div>
-          <div class="eyebrow">共享牌面 · 七格牌河</div>
-          <h2 id="riverTitle"><span id="comboName">等待牌型</span><em id="comboScore">选择手牌放入空位</em></h2>
-        </div>
-        <div class="chain-meter" aria-label="连锁倍率">
-          <small>CHAIN</small><strong id="chainValue">×1.0</strong>
-        </div>
-      </div>
-
-      <div id="river" class="river" role="list" aria-label="七格牌河"></div>
-
-      <div class="table-actions">
-        <p id="hint" class="hint" aria-live="polite">先选择一张手牌，再选择一个空牌位。</p>
-        <div class="action-group">
-          <button id="discardBtn" class="btn btn-secondary" disabled>弃掉选中牌 <kbd>D</kbd></button>
-          <button id="playBtn" class="btn btn-primary" disabled>结算牌型 <kbd>Enter</kbd></button>
+        <div class="intent-token" aria-live="polite">
+          <span class="intent-glyph" id="intentIcon">♦</span>
+          <div><small>敌人意图</small><b id="intentTitle">收债</b></div>
+          <strong id="intentDamage">8</strong>
+          <p id="intentText">造成 8 点伤害</p>
         </div>
       </div>
     </section>
 
-    <section class="lower-grid">
-      <aside class="player-panel panel" aria-label="玩家状态">
-        <div class="player-stat"><span>生命</span><strong class="heart">♥ <b id="playerHp">42</b></strong></div>
-        <div class="player-stat"><span>护盾</span><strong class="shield">◆ <b id="playerShield">0</b></strong></div>
-        <div class="player-stat"><span>筹码</span><strong class="coin">● <b id="coins">0</b></strong></div>
-        <div class="deck-counts"><span>牌库 <b id="deckCount">47</b></span><span>弃牌 <b id="discardCount">0</b></span></div>
-      </aside>
+    <section class="table-zone" aria-labelledby="riverTitle">
+      <div class="table-rim" aria-hidden="true"></div>
+      <div class="table-ornament ornament-left" aria-hidden="true">♠</div>
+      <div class="table-ornament ornament-right" aria-hidden="true">♥</div>
 
-      <section class="hand-panel panel" aria-labelledby="handTitle">
-        <div class="hand-heading">
-          <div><div class="eyebrow">你的手牌</div><h2 id="handTitle">选择一张牌</h2></div>
-          <button id="drawBtn" class="btn btn-quiet" disabled>补牌</button>
-        </div>
-        <div id="hand" class="hand" role="list" aria-label="玩家手牌"></div>
-      </section>
-
-      <aside class="pact-panel panel" aria-labelledby="pactTitle">
-        <div class="eyebrow">本局赌约</div>
+      <aside class="pact-card" id="pactCard" tabindex="0" aria-labelledby="pactTitle">
+        <div class="pact-ribbon">赌约</div>
+        <div class="pact-symbol" aria-hidden="true">◐</div>
         <h2 id="pactTitle">红与黑</h2>
-        <p>交替打出红色占优与黑色占优的牌型，伤害倍率持续提升。</p>
-        <div class="pact-state"><span>上次颜色</span><b id="lastColor">—</b></div>
+        <p>交替打出红色与黑色占优牌型，继续提高倍率。</p>
+        <div class="pact-status"><span>上次</span><b id="lastColor">—</b></div>
       </aside>
+
+      <div class="score-display" aria-live="polite">
+        <small id="comboKicker">牌河尚未成型</small>
+        <h2 id="riverTitle"><span id="comboName">等待牌型</span></h2>
+        <div class="score-formula">
+          <span><b id="baseScore">0</b><small>筹码</small></span>
+          <i>×</i>
+          <span class="multiplier"><b id="chainValue">1.0</b><small>连锁</small></span>
+          <i>=</i>
+          <strong id="previewScore">0</strong>
+        </div>
+      </div>
+
+      <div id="river" class="river" role="list" aria-label="七格共享牌河"></div>
+
+      <div class="table-bottom-hud">
+        <div class="resource-cluster" aria-label="玩家状态">
+          <div class="resource hp"><span>♥</span><b id="playerHp">42</b><small>生命</small></div>
+          <div class="resource shield"><span>◆</span><b id="playerShield">0</b><small>护盾</small></div>
+          <div class="resource coin"><span>●</span><b id="coins">0</b><small>筹码</small></div>
+        </div>
+        <div class="pile-cluster">
+          <button class="pile deck-pile" id="deckPile" type="button" aria-label="查看牌库"><span class="mini-card-back"></span><b id="deckCount">47</b><small>牌库</small></button>
+          <div class="pile discard-pile" aria-label="弃牌数量"><span>╱</span><b id="discardCount">0</b><small>弃牌</small></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="player-zone" aria-label="玩家手牌与操作">
+      <p id="hint" class="context-hint" aria-live="polite">选择一张手牌，然后放入牌河。</p>
+      <div id="hand" class="hand" role="list" aria-label="玩家手牌"></div>
+      <div class="player-actions">
+        <button id="discardBtn" class="game-btn discard-action" disabled><span>弃牌</span><small>D</small></button>
+        <button id="playBtn" class="game-btn play-action" disabled><span>打出牌型</span><small>ENTER</small></button>
+      </div>
     </section>
   </main>
 
+  <div id="comboBanner" class="combo-banner" aria-hidden="true"><small>牌型成立</small><strong>顺子</strong><span>20 × 1.0</span></div>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
-  <dialog id="helpDialog" class="modal">
-    <div class="modal-head"><div><div class="eyebrow">赌局规则</div><h2>如何活着离桌</h2></div><button class="icon-btn" data-close aria-label="关闭说明">×</button></div>
+  <dialog id="helpDialog" class="modal rulebook">
+    <div class="modal-corner tl"></div><div class="modal-corner tr"></div><div class="modal-corner bl"></div><div class="modal-corner br"></div>
+    <div class="modal-head"><div><span class="chapter-label">荷官手册 · 第一页</span><h2>活着离开牌桌</h2></div><button class="close-btn" data-close aria-label="关闭说明">×</button></div>
     <ol>
-      <li><b>放牌：</b>选择一张手牌，再点击七格牌河中的空位；点击已有牌可替换它。</li>
-      <li><b>组型：</b>牌河中凑齐至少五张牌后，系统会寻找其中最强的五张牌型。</li>
-      <li><b>结算：</b>对子提供护盾，三条和顺子擅长攻击，同花触发花色加成。</li>
-      <li><b>连锁：</b>新牌型与上一手共享牌时提高倍率。被用于结算的牌会保留两张，其余进入弃牌堆。</li>
-      <li><b>赌约：</b>交替使用红色占优和黑色占优的牌型，可继续增加伤害倍率。</li>
+      <li><b>放牌</b><span>选择一张手牌，再点击七格牌河中的空位；点击已有牌可替换。</span></li>
+      <li><b>组型</b><span>牌河中至少有五张牌时，荷官会寻找其中最强的五张组合。</span></li>
+      <li><b>结算</b><span>对子提供护盾；三条、顺子与更高牌型造成更强攻击。</span></li>
+      <li><b>连锁</b><span>与上一手共享卡牌可提高倍率。结算后会保留两张高点数牌。</span></li>
+      <li><b>赌约</b><span>交替打出红色和黑色占优牌型，可进一步提高伤害倍率。</span></li>
     </ol>
-    <p class="modal-note">快捷键：数字 1–5 选择手牌，D 弃牌，Enter 结算，Esc 关闭窗口。</p>
+    <p class="modal-note">快捷键：数字 1–5 选择手牌，D 弃牌，Enter 结算，Esc 关闭。</p>
+  </dialog>
+
+  <dialog id="deckDialog" class="modal deck-modal">
+    <div class="modal-head"><div><span class="chapter-label">你的牌组</span><h2>五十二张命运</h2></div><button class="close-btn" data-close-deck aria-label="关闭牌组">×</button></div>
+    <div class="deck-summary"><span>牌库 <b id="deckModalCount">47</b></span><span>弃牌 <b id="discardModalCount">0</b></span><span>牌河 <b id="riverModalCount">0</b></span></div>
+    <div id="deckPreview" class="deck-preview"></div>
   </dialog>
 
   <dialog id="endDialog" class="modal result-modal">
     <div id="resultSigil" class="result-sigil">♠</div>
-    <div class="eyebrow">赌局结算</div>
+    <span class="chapter-label">赌局结算</span>
     <h2 id="resultTitle">你赢下了牌桌</h2>
     <p id="resultText"></p>
     <div class="result-stats"><span>最高连锁 <b id="bestChain">×1.0</b></span><span>累计伤害 <b id="totalDamage">0</b></span></div>
-    <button id="restartBtn" class="btn btn-primary">再来一局</button>
+    <button id="restartBtn" class="game-btn play-action"><span>再次入席</span></button>
   </dialog>
 
   <script type="module" src="./js/main.js"></script>

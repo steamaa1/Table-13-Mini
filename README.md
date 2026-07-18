@@ -58,6 +58,18 @@ npx wrangler deploy
 - Node.js 内置测试框架
 - Cloudflare Workers Static Assets
 
+## 视觉设计
+
+界面采用“地下赌场 × 木刻版画 × 猩红舞台”方向：
+
+- 单一实体牌桌取代网页 Dashboard 面板
+- 原创 CSS 敌人剪影与舞台聚光
+- 泛黄纸牌、暗红桌毡、木质桌沿和黄铜装饰
+- 扇形玩家手牌、实体赌约卡和桌沿 HUD
+- 牌型成立横幅、逐张抬牌、伤害粒子与受击反馈
+- 桌面端和移动端分别重排，而不是简单等比缩放
+
+前端依据 Frontend Design Optimizer 的视觉层次、响应式、交互反馈、无障碍和性能规范构建。项目无前端框架、无外部 CDN、无运行时依赖。
 
 ## License
 
