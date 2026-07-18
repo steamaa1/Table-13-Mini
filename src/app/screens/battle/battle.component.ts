@@ -7,7 +7,7 @@ import { GameStore } from '../../core/state/game.store';
 
 @Component({selector:'app-battle',standalone:true,imports:[PlayingCardComponent,GameDialogComponent],templateUrl:'./battle.component.html',styleUrl:'./battle.component.scss',changeDetection:ChangeDetectionStrategy.OnPush})
 export class BattleComponent {
-  readonly helpOpen=signal(false);readonly deckOpen=signal(false);readonly immersive=signal(false);readonly started=signal(false);readonly leavingStart=signal(false);readonly rankLabel=rankLabel;
+  readonly helpOpen=signal(false);readonly deckOpen=signal(false);readonly exitOpen=signal(false);readonly immersive=signal(false);readonly started=signal(false);readonly leavingStart=signal(false);readonly rankLabel=rankLabel;
   readonly suitGroups=computed(()=>[
     {id:'hearts',name:'红桃',symbol:'♥',cards:this.allCards().filter(card=>card.suit==='hearts')},
     {id:'diamonds',name:'方片',symbol:'♦',cards:this.allCards().filter(card=>card.suit==='diamonds')},
@@ -20,7 +20,12 @@ export class BattleComponent {
   isRetained(card:PlayingCard):boolean {const scored=this.game.resolution()?.hand.cards;if(!scored)return false;return [...scored].sort((a,b)=>b.rank-a.rank).slice(0,2).some(value=>value.id===card.id);}
   isConsuming(card:PlayingCard):boolean{return this.game.resolutionStage()==='consume'&&this.isScoring(card)&&!this.isRetained(card);}
   allCards():PlayingCard[]{return [...this.game.deck(),...this.game.discard(),...this.game.hand(),...this.game.river().filter((card):card is PlayingCard=>card!==null)].sort((a,b)=>a.suit.localeCompare(b.suit)||a.rank-b.rank);}
-  closeAll():void{this.helpOpen.set(false);this.deckOpen.set(false);}
+  closeAll():void{this.helpOpen.set(false);this.deckOpen.set(false);this.exitOpen.set(false);}
+  async exitGame():Promise<void>{
+    this.exitOpen.set(false);this.game.reset();this.started.set(false);
+    if(document.fullscreenElement){try{await document.exitFullscreen();}catch{}}
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
   startGame():void{
     if(this.leavingStart())return;
     this.game.reset();this.leavingStart.set(true);
@@ -35,7 +40,7 @@ export class BattleComponent {
   @HostListener('document:fullscreenchange') syncFullscreen():void{this.immersive.set(Boolean(document.fullscreenElement));}
   @HostListener('window:keydown',['$event']) handleKeyboard(event:KeyboardEvent):void{
     if(event.key==='Escape'){this.closeAll();return;}
-    if(this.helpOpen()||this.deckOpen()||this.game.result())return;
+    if(this.helpOpen()||this.deckOpen()||this.exitOpen()||this.game.result())return;
     if(!this.started()){if(event.key==='Enter')this.startGame();return;}
     if(event.key>='1'&&event.key<='5')this.game.chooseCard(Number(event.key)-1);
     if(event.key.toLowerCase()==='d')this.game.discardSelected();
