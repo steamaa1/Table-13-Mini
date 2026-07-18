@@ -63,14 +63,6 @@ npm run build
 npx wrangler deploy
 ```
 
-## 备份
-
-迁移前的原生 HTML/CSS/JavaScript 版本保存在本地 Git 分支：
-
-```text
-backup/vanilla-ui-before-angular
-```
-
 ## License
 
 MIT
