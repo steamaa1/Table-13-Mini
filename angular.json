@@ -29,7 +29,7 @@
           "defaultConfiguration": "production"
         },
         "serve": {"builder":"@angular-devkit/build-angular:dev-server","configurations":{"production":{"buildTarget":"table-13-mini:build:production"},"development":{"buildTarget":"table-13-mini:build:development"}},"defaultConfiguration":"development"},
-        "test": {"builder":"@angular-devkit/build-angular:karma","options":{"polyfills":["zone.js","zone.js/testing"],"tsConfig":"tsconfig.spec.json","inlineStyleLanguage":"scss","assets":[{"glob":"**/*","input":"public"}],"styles":["src/styles.scss"]}}
+        "test": {"builder":"@angular-devkit/build-angular:karma","options":{"polyfills":["zone.js","zone.js/testing"],"tsConfig":"tsconfig.spec.json","inlineStyleLanguage":"scss","assets":[{"glob":"**/*","input":"public","output":"/"}],"styles":["src/styles.scss"]}}
       }
     }
   }
