@@ -1,75 +1,75 @@
 # 十三号牌桌 · Table 13 Mini
 
-一款以 **七格牌河、扑克战斗和共享牌连锁** 为核心的浏览器肉鸽游戏样品。
-
-## 当前可玩内容
-
-- 标准 52 张扑克牌与 7 格共享牌河
-- 自动识别高牌、对子、两对、三条、顺子、同花、葫芦、四条和同花顺
-- 三场连续赌客战斗
-- 对子护盾、同花恢复/增伤等基础牌型特性
-- 共享卡牌连锁倍率
-- “红与黑”赌约：交替打出红色/黑色占优牌型获得额外倍率
-- 鼠标、触摸和键盘操作
-- 响应式布局、可见焦点、ARIA 状态和减弱动画支持
-
-## 操作
-
-1. 点击一张手牌。
-2. 点击牌河中的空位放牌；点击已有牌可进行替换。
-3. 牌河达到 5 张后，可点击“结算牌型”。
-4. 结算会保留牌型中点数最高的两张牌，用于下一次连锁。
-
-快捷键：`1–5` 选择手牌、`D` 弃牌、`Enter` 结算。
-
-## 本地运行
-
-无需安装依赖：
-
-```bash
-python3 -m http.server 8080 -d public
-```
-
-打开 `http://localhost:8080`。
-
-运行牌型测试：
-
-```bash
-node --test
-```
-
-## Cloudflare Workers 部署
-
-项目已包含 Workers Static Assets 配置。安装并登录 Wrangler 后：
-
-```bash
-npx wrangler login
-npx wrangler deploy
-```
-
-也可以在 Cloudflare Dashboard 中连接此 GitHub 仓库，部署命令填写 `npx wrangler deploy`。
+一款以 **七格牌河、扑克战斗和共享牌连锁** 为核心的 Angular 浏览器肉鸽游戏样品。
 
 ## 技术栈
 
-- HTML5
-- CSS3
-- 原生 JavaScript ES Modules
-- Canvas 2D 粒子效果
-- Node.js 内置测试框架
+- Angular 17 Standalone Components
+- TypeScript 5.4
+- Angular Signals 状态管理
+- SCSS 组件样式
 - Cloudflare Workers Static Assets
 
-## 视觉设计
+仓库不提交 `node_modules`、构建缓存或手工生成的锁文件。本次迁移环境未完成本地依赖安装，因此拉取项目后请先生成自己的 `package-lock.json`：
 
-界面采用“地下赌场 × 木刻版画 × 猩红舞台”方向：
+```bash
+npm install
+npm start
+```
 
-- 单一实体牌桌取代网页 Dashboard 面板
-- 原创 CSS 敌人剪影与舞台聚光
-- 泛黄纸牌、暗红桌毡、木质桌沿和黄铜装饰
-- 扇形玩家手牌、实体赌约卡和桌沿 HUD
-- 牌型成立横幅、逐张抬牌、伤害粒子与受击反馈
-- 桌面端和移动端分别重排，而不是简单等比缩放
+生产构建：
 
-前端依据 Frontend Design Optimizer 的视觉层次、响应式、交互反馈、无障碍和性能规范构建。项目无前端框架、无外部 CDN、无运行时依赖。
+```bash
+npm run build
+```
+
+构建输出位于 `dist/table-13-mini/browser`。
+
+## 当前玩法
+
+- 标准 52 张牌与七格共享牌河
+- 每回合 2 次放置、替换或弃牌行动
+- 自动识别并选择最强五张牌型
+- 对子提供护盾，同花附加花色效果
+- 共享卡牌建立连锁倍率
+- “红与黑”赌约奖励红黑交替出牌
+- 三名连续敌人与不同攻击强度
+- 桌面和移动端响应式牌桌
+- 键盘快捷键：`1–5`、`D`、`Enter`、`Esc`
+
+## Angular 架构
+
+```text
+src/app/
+├── components/
+│   ├── playing-card/
+│   └── game-dialog/
+├── content/
+│   └── enemies.ts
+├── core/
+│   ├── models/
+│   ├── poker/
+│   └── state/
+└── screens/
+    └── battle/
+```
+
+## 部署到 Cloudflare Workers
+
+安装 Wrangler 并登录后：
+
+```bash
+npm run build
+npx wrangler deploy
+```
+
+## 备份
+
+迁移前的原生 HTML/CSS/JavaScript 版本保存在本地 Git 分支：
+
+```text
+backup/vanilla-ui-before-angular
+```
 
 ## License
 
