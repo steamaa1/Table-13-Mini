@@ -1,5 +1,32 @@
 <a class="skip-link" href="#table">跳到牌桌</a>
 <div class="grain" aria-hidden="true"></div><div class="vignette" aria-hidden="true"></div>
+@if(!started()){
+  <section class="start-screen" [class.leaving]="leavingStart()" aria-labelledby="startTitle">
+    <div class="start-curtain curtain-left" aria-hidden="true"></div><div class="start-curtain curtain-right" aria-hidden="true"></div>
+    <div class="start-light" aria-hidden="true"></div>
+    <div class="floating-suits" aria-hidden="true"><span>♠</span><span>♥</span><span>♣</span><span>♦</span></div>
+    <div class="title-cards" aria-hidden="true">
+      <div class="title-card card-left"><b>K</b><i>♠</i><strong>♠</strong></div>
+      <div class="title-card card-center"><b>13</b><i>♦</i><strong>♦</strong></div>
+      <div class="title-card card-right"><b>A</b><i>♥</i><strong>♥</strong></div>
+    </div>
+    <div class="start-copy">
+      <span class="start-kicker">A POKER ROGUELITE · 可玩样品</span>
+      <div class="start-seal">XIII</div>
+      <h1 id="startTitle"><small>十三号</small>牌桌</h1>
+      <p>在七格共享牌河中留下关键牌，兑现赌约，击败坐在桌对面的三名赌客。</p>
+      <div class="feature-chips"><span>七格牌河</span><span>扑克连锁</span><span>红黑赌约</span></div>
+      <div class="start-actions">
+        <button class="start-primary" type="button" (click)="startGame()"><span>开始赌局</span><small>按 ENTER 入席</small></button>
+        <button class="start-secondary" type="button" (click)="helpOpen.set(true)"><span>阅读规则</span><small>荷官手册</small></button>
+        <button class="start-icon" type="button" (click)="toggleImmersive()" aria-label="切换沉浸模式">⛶</button>
+      </div>
+      <footer><span>TABLE 13 MINI</span><i></i><span>v0.3 · NO REAL GAMBLING</span></footer>
+    </div>
+    <div class="start-scroll-hint" aria-hidden="true"><span></span>向下滑动，收起浏览器栏</div>
+  </section>
+}
+<div class="game-world" [class.waiting]="!started()">
 <header class="game-bar">
   <div class="brand"><span class="brand-seal">XIII</span><span><b>十三号牌桌</b><small>THE THIRTEENTH TABLE</small></span></div>
   <div class="run-progress"><span>牌桌 <b>{{game.round()}} / 3</b></span><i></i><span>回合 <b>{{game.turn()}}</b></span><i></i><span>行动 <b>{{game.actionsLeft()}} / 2</b></span></div>
@@ -42,6 +69,7 @@
     <div class="actions"><button class="discard" type="button" [disabled]="!game.canDiscard()" (click)="game.discardSelected()"><b>弃牌</b><small>D</small></button><button class="play" type="button" [disabled]="!game.canPlay()" (click)="game.settle()"><b>{{game.canPlay()?'打出牌型':'牌河 '+game.riverCount()+'/5'}}</b><small>{{game.canPlay()?'ENTER':'继续放牌'}}</small></button></div>
   </section>
 </main>
+</div>
 
 @if(game.resolution()){<div class="combo-banner" [class.show]="game.phase()==='resolving'"><small>{{game.resolution()!.pact==='fulfilled'?'赌约兑现':game.resolution()!.shared?'共享连锁':'牌型成立'}}</small><strong>{{game.resolution()!.hand.name}}</strong><span>{{game.resolution()!.hand.base}} × {{game.resolution()!.chain.toFixed(2)}} = {{game.resolution()!.damage}}</span></div>}
 @if(game.toast()){<div class="toast" role="status">{{game.toast()}}</div>}
