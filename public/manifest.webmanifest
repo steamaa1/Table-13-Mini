@@ -1,0 +1,17 @@
+{
+  "name": "十三号牌桌 · Table 13 Mini",
+  "short_name": "十三号牌桌",
+  "description": "七格牌河与扑克连锁战斗肉鸽游戏",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#090706",
+  "theme_color": "#120a08",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

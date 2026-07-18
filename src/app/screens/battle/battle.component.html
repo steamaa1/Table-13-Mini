@@ -18,7 +18,7 @@
       <div class="feature-chips"><span>七格牌河</span><span>扑克连锁</span><span>红黑赌约</span></div>
       <div class="start-actions">
         <button class="start-primary" type="button" (click)="startGame()"><span>开始赌局</span><small>按 ENTER 入席</small></button>
-        <button class="start-secondary" type="button" (click)="helpOpen.set(true)"><span>阅读规则</span><small>荷官手册</small></button>
+        <button class="start-secondary" type="button" (click)="$event.stopPropagation(); helpOpen.set(true)"><span>阅读规则</span><small>荷官手册</small></button>
       </div>
       <button class="start-immersive" type="button" (click)="toggleImmersive()" aria-label="切换沉浸模式"><span>⛶</span> 进入沉浸模式</button>
       <a class="project-link" href="https://github.com/steamaa1/Table-13-Mini" target="_blank" rel="noopener noreferrer" aria-label="在 GitHub 查看 Table-13-Mini 项目"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 .7a11.5 11.5 0 0 0-3.64 22.41c.58.11.79-.25.79-.56v-2.23c-3.22.7-3.9-1.37-3.9-1.37-.53-1.34-1.29-1.7-1.29-1.7-1.05-.72.08-.71.08-.71 1.17.08 1.78 1.2 1.78 1.2 1.04 1.78 2.72 1.27 3.38.97.1-.75.41-1.27.74-1.56-2.57-.29-5.27-1.28-5.27-5.69 0-1.26.45-2.28 1.19-3.09-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.16 1.18a10.9 10.9 0 0 1 5.76 0c2.2-1.49 3.16-1.18 3.16-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.83 1.19 3.09 0 4.42-2.71 5.39-5.29 5.68.42.36.79 1.06.79 2.14v3.17c0 .31.21.68.8.56A11.5 11.5 0 0 0 12 .7Z"/></svg><span>steamaa1 / Table-13-Mini</span></a>
@@ -33,7 +33,7 @@
   <div class="run-progress"><span>牌桌 <b>{{game.round()}} / 3</b></span><i></i><span>回合 <b>{{game.turn()}}</b></span><i></i><span>行动 <b>{{game.actionsLeft()}} / 2</b></span></div>
   <nav aria-label="游戏功能">
     <button type="button" (click)="toggleImmersive()" [attr.aria-label]="immersive()?'退出沉浸模式':'进入沉浸模式'"><span>{{immersive()?'↙':'⛶'}}</span><b>沉浸</b></button>
-    <button type="button" (click)="deckOpen.set(true)"><span>▥</span><b>牌组</b></button>
+    <button type="button" (click)="openDeck()"><span>▥</span><b>牌组</b></button>
     <button type="button" (click)="helpOpen.set(true)"><span>?</span><b>规则</b></button>
     <button class="exit-nav" type="button" (click)="exitOpen.set(true)"><span>↩</span><b>退出</b></button>
   </nav>
@@ -62,7 +62,7 @@
         @else{<button class="card-slot" type="button" [disabled]="game.phase()!=='player'" [attr.aria-label]="'空牌位 '+($index+1)" (click)="game.placeAt($index)"><span>+</span></button>}
       }
     </div>
-    <div class="table-hud"><div class="resources"><span class="hp">♥ <b>{{game.playerHp()}}</b><small>生命</small></span><span class="shield">◆ <b>{{game.shield()}}</b><small>护盾</small></span><span class="coin">● <b>{{game.coins()}}</b><small>筹码</small></span></div><div class="piles"><button type="button" (click)="deckOpen.set(true)"><i></i><b>{{game.deck().length}}</b><small>牌库</small></button><span><b>{{game.discard().length}}</b><small>弃牌</small></span></div></div>
+    <div class="table-hud"><div class="resources"><span class="hp">♥ <b>{{game.playerHp()}}</b><small>生命</small></span><span class="shield">◆ <b>{{game.shield()}}</b><small>护盾</small></span><span class="coin">● <b>{{game.coins()}}</b><small>筹码</small></span></div><div class="piles"><button type="button" (click)="openDeck()"><i></i><b>{{game.deck().length}}</b><small>牌库</small></button><span><b>{{game.discard().length}}</b><small>弃牌</small></span></div></div>
   </section>
 
   <section class="player-zone">
@@ -76,7 +76,8 @@
 @if(game.resolution()){<div class="combo-banner" [class.show]="game.phase()==='resolving'"><small>{{game.resolution()!.pact==='fulfilled'?'赌约兑现':game.resolution()!.shared?'共享连锁':'牌型成立'}}</small><strong>{{game.resolution()!.hand.name}}</strong><span>{{game.resolution()!.hand.base}} × {{game.resolution()!.chain.toFixed(2)}} = {{game.resolution()!.damage}}</span></div>}
 @if(game.toast()){<div class="toast" role="status">{{game.toast()}}</div>}
 
-<app-game-dialog [open]="helpOpen()" kicker="荷官手册 · 完整规则" title="活着离开牌桌" (closeDialog)="helpOpen.set(false)">
+@if(helpOpen()){
+<app-game-dialog [open]="true" kicker="荷官手册 · 完整规则" title="活着离开牌桌" (closeDialog)="helpOpen.set(false)">
   <div class="rule-hero"><span>XIII</span><div><b>一张牌，不只组成一手牌</b><p>利用七格共享牌河保留关键卡牌，连续制造牌型并击败三名赌客。</p></div></div>
   <div class="rule-sections illustrated-rules">
     <section class="flow-rule"><h3><span>01</span> 回合流程</h3><div class="rule-flow"><div><span class="flow-hand">▱▱▱</span><b>选择手牌</b></div><i>→</i><div><span class="flow-river">◇ ◇ ◇</span><b>放入牌河</b></div><i>→</i><div><span class="flow-action">2</span><b>消耗行动</b></div><i>→</i><div><span class="flow-enemy">♜</span><b>敌人行动</b></div></div><ol><li>每回合获得 2 次行动。</li><li>放置、替换或弃牌消耗 1 次行动。</li><li>牌河不足五张且行动耗尽时，自动进入敌人回合。</li><li>牌型成立后可以立即结算。</li></ol></section>
@@ -95,17 +96,24 @@
   </div>
   <div class="shortcut-strip"><span><kbd>1–5</kbd> 选牌</span><span><kbd>D</kbd> 弃牌</span><span><kbd>Enter</kbd> 结算</span><span><kbd>Esc</kbd> 关闭</span></div>
 </app-game-dialog>
+}
 
-<app-game-dialog [open]="deckOpen()" kicker="牌组档案 · 实时状态" title="五十二张命运" (closeDialog)="deckOpen.set(false)">
+@if(deckOpen()){
+<app-game-dialog [open]="true" kicker="牌组档案 · 实时状态" title="五十二张命运" (closeDialog)="closeDeck()">
   <div class="deck-summary"><span><i>▧</i>牌库 <b>{{game.deck().length}}</b></span><span><i>⌁</i>手牌 <b>{{game.hand().length}}</b></span><span><i>◇</i>牌河 <b>{{game.riverCount()}}</b></span><span><i>╱</i>弃牌 <b>{{game.discard().length}}</b></span></div>
-  <div class="deck-groups">@for(group of suitGroups();track group.id){<section [class.red]="group.id==='hearts'||group.id==='diamonds'"><header><span>{{group.symbol}}</span><div><b>{{group.name}}</b><small>{{group.cards.length}} 张</small></div></header><div class="deck-card-row">@for(card of group.cards;track card.id){<span class="mini-playing-card"><b>{{rankLabel(card.rank)}}</b><i>{{card.symbol}}</i></span>}</div></section>}</div>
+  <div class="deck-groups">@for(group of deckGroups();track group.id){<section [class.red]="group.id==='hearts'||group.id==='diamonds'"><header><span>{{group.symbol}}</span><div><b>{{group.name}}</b><small>{{group.cards.length}} 张</small></div></header><div class="deck-card-row">@for(card of group.cards;track card.id){<span class="mini-playing-card"><b>{{rankLabel(card.rank)}}</b><i>{{card.symbol}}</i></span>}</div></section>}</div>
   <p class="deck-note">这里展示本局所有卡牌的实时归属；随着牌河结算，卡牌会在牌库、手牌与弃牌区之间流转。</p>
 </app-game-dialog>
+}
 
-<app-game-dialog [open]="exitOpen()" kicker="离席确认" title="要退出当前赌局吗？" (closeDialog)="exitOpen.set(false)">
+@if(exitOpen()){
+<app-game-dialog [open]="true" kicker="离席确认" title="要退出当前赌局吗？" (closeDialog)="exitOpen.set(false)">
   <div class="exit-confirm"><span>↩</span><p>退出后本局进度不会保留，你将返回开始界面。</p><div><button class="stay-button" type="button" (click)="exitOpen.set(false)">继续赌局</button><button class="leave-button" type="button" (click)="exitGame()">确认退出</button></div></div>
 </app-game-dialog>
+}
 
-<app-game-dialog [open]="game.result()!==null" kicker="赌局结算" [title]="game.result()==='win'?'你赢下了十三号牌桌':'你的名字被写进了账本'">
+@if(game.result()!==null){
+<app-game-dialog [open]="true" kicker="赌局结算" [title]="game.result()==='win'?'你赢下了十三号牌桌':'你的名字被写进了账本'">
   <div class="result"><strong>{{game.result()==='win'?'♛':'♠'}}</strong><p>{{game.result()==='win'?'三名赌客依次退席。更深的赌局尚未开放。':'筹码散落一地。调整留牌节奏，再次挑战。'}}</p><div><span>最高连锁 <b>×{{game.bestChain().toFixed(2)}}</b></span><span>累计伤害 <b>{{game.totalDamage()}}</b></span></div><button type="button" (click)="game.reset()">再次入席</button></div>
 </app-game-dialog>
+}
