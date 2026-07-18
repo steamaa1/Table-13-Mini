@@ -1,6 +1,6 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "table-13-mini",
+  "name": "table-13",
   "compatibility_date": "2026-07-18",
   "assets": {
     "directory": "./dist/table-13-mini/browser",
