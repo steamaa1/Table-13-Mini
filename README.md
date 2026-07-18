@@ -56,12 +56,22 @@ src/app/
 
 ## 部署到 Cloudflare Workers
 
-安装 Wrangler 并登录后：
+安装依赖并登录 Cloudflare 后：
 
 ```bash
-npm run build
-npx wrangler deploy
+npm run deploy
 ```
+
+`npm run deploy` 会通过 `predeploy` 自动先执行 Angular 生产构建，再调用 Wrangler 上传 `dist/table-13-mini/browser`。
+
+在 Cloudflare Workers Builds 中请设置：
+
+```text
+Build command:  （留空）
+Deploy command: npm run deploy
+```
+
+不要将 Deploy command 单独填写为 `npx wrangler deploy`，否则 Angular 构建产物尚未生成，Wrangler 会提示 `assets.directory` 不存在。
 
 ## License
 
