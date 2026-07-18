@@ -8,6 +8,6 @@ import { rankLabel } from '../../core/poker/poker-engine';
 })
 export class PlayingCardComponent {
   @Input({required:true}) card!:PlayingCard; @Input() selected=false; @Input() scoring=false; @Input() retained=false;
-  @Input() compact=false; @Input() disabled=false; @Output() cardClick=new EventEmitter<void>();
+  @Input() consuming=false; @Input() compact=false; @Input() disabled=false; @Output() cardClick=new EventEmitter<void>();
   rankLabel=rankLabel;
 }

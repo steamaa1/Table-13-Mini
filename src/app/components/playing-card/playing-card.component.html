@@ -1,4 +1,4 @@
-<button class="playing-card" type="button" [class.red]="card.color === 'red'" [class.selected]="selected" [class.scoring]="scoring" [class.retained]="retained" [class.compact]="compact" [disabled]="disabled" [attr.aria-label]="rankLabel(card.rank) + card.symbol" (click)="cardClick.emit()">
+<button class="playing-card" type="button" [class.red]="card.color === 'red'" [class.selected]="selected" [class.scoring]="scoring" [class.retained]="retained" [class.consuming]="consuming" [class.compact]="compact" [disabled]="disabled" [attr.aria-label]="rankLabel(card.rank) + card.symbol" (click)="cardClick.emit()">
   <span class="paper-grain" aria-hidden="true"></span>
   <span class="corner top"><b>{{ rankLabel(card.rank) }}</b><i>{{ card.symbol }}</i></span>
   <span class="card-emblem" aria-hidden="true"><span>{{ card.symbol }}</span></span>

@@ -13,6 +13,7 @@ export class GameStore {
   readonly lastUsed=signal<string[]>([]); readonly lastColor=signal<'红色'|'黑色'|null>(null);
   readonly bestChain=signal(1); readonly totalDamage=signal(0); readonly phase=signal<GamePhase>('player');
   readonly actionsLeft=signal(2); readonly toast=signal(''); readonly resolution=signal<ResolutionPreview|null>(null);
+  readonly resolutionStage=signal<'idle'|'score'|'consume'>('idle');
   readonly result=signal<'win'|'loss'|null>(null);
 
   readonly enemy=computed(()=>ENEMIES[this.round()-1]);
@@ -24,6 +25,15 @@ export class GameStore {
   readonly previewDamage=computed(()=>this.preview()?.damage ?? 0);
   readonly canPlay=computed(()=>this.phase()==='player'&&this.currentHand()!==null);
   readonly canDiscard=computed(()=>this.phase()==='player'&&this.selected()!==null&&this.actionsLeft()>0);
+  readonly actionHint=computed(()=>{
+    if(this.phase()==='enemy')return '敌人正在行动……';
+    if(this.phase()==='resolving')return '荷官正在结算牌型……';
+    if(this.currentHand())return `${this.currentHand()!.name}已成立，可以打出牌型。`;
+    const needed=Math.max(0,5-this.riverCount());
+    if(this.actionsLeft()===0)return `牌河还差 ${needed} 张，敌人回合后继续补牌。`;
+    if(this.selected()!==null)return '已抽出一张牌，请选择牌河位置。';
+    return `选择手牌放入牌河；还差 ${needed} 张形成牌型。`;
+  });
 
   constructor(){this.reset();}
 
@@ -31,7 +41,7 @@ export class GameStore {
     this.deck.set(shuffle(createDeck()));this.discard.set([]);this.hand.set([]);this.river.set(Array(7).fill(null));
     this.selected.set(null);this.playerHp.set(42);this.shield.set(0);this.coins.set(0);this.turn.set(1);this.round.set(1);
     this.chain.set(1);this.lastUsed.set([]);this.lastColor.set(null);this.bestChain.set(1);this.totalDamage.set(0);
-    this.phase.set('player');this.actionsLeft.set(2);this.result.set(null);this.resolution.set(null);this.loadEnemy();this.drawTo(5);
+    this.phase.set('player');this.actionsLeft.set(2);this.result.set(null);this.resolution.set(null);this.resolutionStage.set('idle');this.loadEnemy();this.drawTo(5);
   }
 
   chooseCard(index:number):void {if(this.phase()!=='player')return;this.selected.update(value=>value===index?null:index);}
@@ -42,21 +52,23 @@ export class GameStore {
     const hand=[...this.hand()],river=[...this.river()];const incoming=hand.splice(selected,1)[0];
     if(river[index])hand.push(river[index]!);river[index]=incoming;
     this.hand.set(hand);this.river.set(river);this.selected.set(null);this.actionsLeft.update(value=>value-1);
+    this.advanceTurnWhenStuck();
   }
 
   discardSelected():void {
     const selected=this.selected();if(selected===null||!this.canDiscard())return;
     const hand=[...this.hand()];const [removed]=hand.splice(selected,1);this.hand.set(hand);this.discard.update(cards=>[...cards,removed]);
     this.selected.set(null);this.actionsLeft.update(value=>value-1);this.drawTo(5);
+    this.advanceTurnWhenStuck();
   }
 
   async settle():Promise<void> {
     const preview=this.preview();if(!preview||!this.canPlay())return;
-    this.phase.set('resolving');this.resolution.set(preview);await this.wait(720);
+    this.phase.set('resolving');this.resolution.set(preview);this.resolutionStage.set('score');await this.wait(720);
     this.chain.set(preview.chain);this.bestChain.update(value=>Math.max(value,preview.chain));this.lastColor.set(preview.hand.color);
     this.shield.update(value=>value+preview.shieldGain);this.playerHp.update(value=>Math.min(42,value+preview.heal));
     this.enemyHp.update(value=>value-preview.damage);this.totalDamage.update(value=>value+preview.damage);this.coins.update(value=>value+Math.max(1,preview.hand.tier));
-    this.lastUsed.set(preview.hand.cards.map(card=>card.id));await this.wait(360);this.consumeScoredCards(preview.hand);
+    this.lastUsed.set(preview.hand.cards.map(card=>card.id));this.resolutionStage.set('consume');await this.wait(420);this.consumeScoredCards(preview.hand);
     if(this.enemyHp()<=0){await this.winRound();return;}
     await this.enemyTurn();
   }
@@ -78,6 +90,13 @@ export class GameStore {
     this.discard.update(cards=>[...cards,...discarded]);
   }
 
+  private advanceTurnWhenStuck():void {
+    if(this.phase()==='player'&&this.actionsLeft()===0&&!this.currentHand()){
+      this.notify('牌河尚未成型，敌人开始行动');
+      void this.enemyTurn();
+    }
+  }
+
   private async enemyTurn():Promise<void> {
     this.phase.set('enemy');await this.wait(420);let damage=this.enemy().damage;
     const blocked=Math.min(this.shield(),damage);this.shield.update(value=>value-blocked);damage-=blocked;
@@ -85,14 +104,14 @@ export class GameStore {
     if(this.round()===3&&this.turn()%3===0){this.river.update(cards=>shuffle(cards));this.notify('庄家作弊：牌河被调换');}
     else this.notify(damage>0?`敌人造成 ${damage} 点伤害`:'护盾挡下了攻击');
     if(this.playerHp()<=0){this.phase.set('ended');this.result.set('loss');return;}
-    this.turn.update(value=>value+1);this.actionsLeft.set(2);this.drawTo(5);this.resolution.set(null);this.phase.set('player');
+    this.turn.update(value=>value+1);this.actionsLeft.set(2);this.drawTo(5);this.resolution.set(null);this.resolutionStage.set('idle');this.phase.set('player');
   }
 
   private async winRound():Promise<void> {
     if(this.round()>=3){this.phase.set('ended');this.result.set('win');return;}
     this.phase.set('transition');await this.wait(650);this.round.update(value=>value+1);this.turn.set(1);this.chain.update(value=>Math.max(1,value-.5));
     this.lastUsed.set([]);this.coins.update(value=>value+12);this.playerHp.update(value=>Math.min(42,value+8));this.actionsLeft.set(2);
-    this.loadEnemy();this.resolution.set(null);this.phase.set('player');this.notify('下一名赌客入席');
+    this.loadEnemy();this.resolution.set(null);this.resolutionStage.set('idle');this.phase.set('player');this.notify('下一名赌客入席');
   }
 
   private loadEnemy():void {this.enemyMax.set(this.enemy().hp);this.enemyHp.set(this.enemy().hp);}
