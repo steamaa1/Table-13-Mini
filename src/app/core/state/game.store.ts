@@ -19,6 +19,9 @@ export class GameStore {
   readonly riverCount=computed(()=>this.river().filter(card=>card!==null).length);
   readonly currentHand=computed(()=>bestHand(this.river().filter((card):card is PlayingCard=>card!==null)));
   readonly preview=computed(()=>this.calculateResolution(this.currentHand()));
+  readonly previewBase=computed(()=>this.currentHand()?.base ?? 0);
+  readonly previewChain=computed(()=>this.preview()?.chain.toFixed(2) ?? '1.00');
+  readonly previewDamage=computed(()=>this.preview()?.damage ?? 0);
   readonly canPlay=computed(()=>this.phase()==='player'&&this.currentHand()!==null);
   readonly canDiscard=computed(()=>this.phase()==='player'&&this.selected()!==null&&this.actionsLeft()>0);
 

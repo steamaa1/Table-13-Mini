@@ -11,7 +11,7 @@
   <section id="table" class="table-zone" [class.enemy-turn]="game.phase()==='enemy'">
     <div class="table-rim"></div><div class="table-mark" aria-hidden="true">XIII</div>
     <aside class="pact-card" tabindex="0"><span class="ribbon">赌约</span><i>◐</i><h2>红与黑</h2><p>交替打出红色与黑色占优牌型，继续提高倍率。</p><footer><span>上次</span><b>{{game.lastColor() ?? '—'}}</b></footer></aside>
-    <section class="score-display" aria-live="polite"><small>{{game.currentHand() ? game.currentHand()!.color+'占优 · 牌型成立' : '牌河尚未成型'}}</small><h2>{{game.currentHand()?.name ?? '等待牌型'}}</h2><div><span><b>{{game.currentHand()?.base ?? 0}}</b><small>筹码</small></span><i>×</i><span class="mult"><b>{{game.preview()?.chain.toFixed(2) ?? '1.00'}}</b><small>连锁</small></span><i>=</i><strong>{{game.preview()?.damage ?? 0}}</strong></div></section>
+    <section class="score-display" aria-live="polite"><small>{{game.currentHand() ? game.currentHand()!.color+'占优 · 牌型成立' : '牌河尚未成型'}}</small><h2>{{game.currentHand()?.name ?? '等待牌型'}}</h2><div><span><b>{{game.previewBase()}}</b><small>筹码</small></span><i>×</i><span class="mult"><b>{{game.previewChain()}}</b><small>连锁</small></span><i>=</i><strong>{{game.previewDamage()}}</strong></div></section>
     <div class="river" aria-label="七格共享牌河">
       @for(card of game.river();track $index){@if(card){<app-playing-card [card]="card" [compact]="true" [disabled]="game.phase()!=='player'" [scoring]="isScoring(card)" [retained]="isRetained(card)" (cardClick)="game.placeAt($index)"/>}@else{<button class="card-slot" type="button" [disabled]="game.phase()!=='player'" [attr.aria-label]="'空牌位 '+($index+1)" (click)="game.placeAt($index)"><span>+</span></button>}}
     </div>

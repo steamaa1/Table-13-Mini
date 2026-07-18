@@ -9,7 +9,13 @@ const FACE_LABELS:Readonly<Record<number,string>>={11:'J',12:'Q',13:'K',14:'A'};
 export const rankLabel = (rank:number):string => FACE_LABELS[rank] ?? String(rank);
 
 export function createDeck(): PlayingCard[] {
-  return SUITS.flatMap(suit => RANKS.map(rank => ({id:`${suit.id}-${rank}`, ...suit, rank})));
+  return SUITS.flatMap(suit => RANKS.map(rank => ({
+    id:`${suit.id}-${rank}`,
+    suit:suit.id,
+    symbol:suit.symbol,
+    color:suit.color,
+    rank
+  })));
 }
 
 export function shuffle<T>(items:ReadonlyArray<T>, random:()=>number=Math.random):T[] {
