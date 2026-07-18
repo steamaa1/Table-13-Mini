@@ -203,10 +203,6 @@ Deploy command: npm run deploy
 public/_headers
 ```
 
-## 项目地址
+---
 
-https://github.com/steamaa1/Table-13-Mini
-
-## License
-
-MIT
+本项目由**GPT5.6-Sol**开发
