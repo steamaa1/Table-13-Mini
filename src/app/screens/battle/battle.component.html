@@ -78,11 +78,20 @@
 
 <app-game-dialog [open]="helpOpen()" kicker="荷官手册 · 完整规则" title="活着离开牌桌" (closeDialog)="helpOpen.set(false)">
   <div class="rule-hero"><span>XIII</span><div><b>一张牌，不只组成一手牌</b><p>利用七格共享牌河保留关键卡牌，连续制造牌型并击败三名赌客。</p></div></div>
-  <div class="rule-sections">
-    <section><h3><span>01</span> 回合流程</h3><ol><li>每回合获得 2 次行动。</li><li>放置、替换或弃掉一张手牌消耗 1 次行动。</li><li>牌河不足五张且行动耗尽时，敌人行动并开始下一回合。</li><li>牌型成立后可立即结算，不必等行动耗尽。</li></ol></section>
-    <section><h3><span>02</span> 牌型效果</h3><div class="hand-rules"><p><b>对子</b><em>8 筹码 · 6 护盾</em></p><p><b>两对</b><em>12 筹码 · 10 护盾</em></p><p><b>三条</b><em>16 筹码</em></p><p><b>顺子</b><em>20 筹码</em></p><p><b>同花</b><em>24 筹码 · 花色加成</em></p><p><b>葫芦 / 四条 / 同花顺</b><em>28 / 34 / 42 筹码</em></p></div></section>
-    <section><h3><span>03</span> 留牌与连锁</h3><p>结算后，参与牌型的五张牌中，点数最高的两张会留在牌河，其余三张收缩进入弃牌堆。下一手若共享上次使用过的牌，连锁倍率提高。</p></section>
-    <section><h3><span>04</span> 红与黑赌约</h3><p>交替打出红色占优与黑色占优的牌型，倍率额外增加；连续使用相同颜色会降低倍率。</p></section>
+  <div class="rule-sections illustrated-rules">
+    <section class="flow-rule"><h3><span>01</span> 回合流程</h3><div class="rule-flow"><div><span class="flow-hand">▱▱▱</span><b>选择手牌</b></div><i>→</i><div><span class="flow-river">◇ ◇ ◇</span><b>放入牌河</b></div><i>→</i><div><span class="flow-action">2</span><b>消耗行动</b></div><i>→</i><div><span class="flow-enemy">♜</span><b>敌人行动</b></div></div><ol><li>每回合获得 2 次行动。</li><li>放置、替换或弃牌消耗 1 次行动。</li><li>牌河不足五张且行动耗尽时，自动进入敌人回合。</li><li>牌型成立后可以立即结算。</li></ol></section>
+    <section class="poker-rule"><h3><span>02</span> 牌型效果图例</h3><div class="poker-examples">
+      <article><div class="example-cards"><span class="red">7♥</span><span>7♣</span></div><div><b>对子</b><em>8 筹码 · 6 护盾</em></div></article>
+      <article><div class="example-cards"><span class="red">7♥</span><span>7♦</span><span>Q♣</span><span>Q♠</span></div><div><b>两对</b><em>12 筹码 · 10 护盾</em></div></article>
+      <article><div class="example-cards"><span>9♠</span><span class="red">9♥</span><span>9♣</span></div><div><b>三条</b><em>16 筹码</em></div></article>
+      <article><div class="example-cards"><span>5♣</span><span class="red">6♦</span><span>7♠</span><span class="red">8♥</span><span>9♣</span></div><div><b>顺子</b><em>20 筹码</em></div></article>
+      <article><div class="example-cards"><span class="red">2♥</span><span class="red">6♥</span><span class="red">9♥</span><span class="red">J♥</span><span class="red">K♥</span></div><div><b>同花</b><em>24 筹码 · 花色加成</em></div></article>
+      <article><div class="example-cards"><span>8♠</span><span>8♣</span><span class="red">8♥</span><span class="red">K♥</span><span>K♣</span></div><div><b>葫芦</b><em>28 筹码</em></div></article>
+      <article><div class="example-cards"><span>4♠</span><span>4♣</span><span class="red">4♥</span><span class="red">4♦</span></div><div><b>四条</b><em>34 筹码</em></div></article>
+      <article><div class="example-cards"><span>9♠</span><span>10♠</span><span>J♠</span><span>Q♠</span><span>K♠</span></div><div><b>同花顺</b><em>42 筹码</em></div></article>
+    </div></section>
+    <section class="chain-rule"><h3><span>03</span> 留牌与连锁图例</h3><div class="chain-example"><div><small>第一手</small><div class="example-cards"><span>5♣</span><span class="red">6♦</span><span class="shared">7♠</span><span class="shared red">8♥</span><span>9♣</span></div></div><i>共享 7、8<br>倍率提高</i><div><small>第二手</small><div class="example-cards"><span class="red">6♥</span><span class="shared">7♠</span><span class="shared red">8♥</span><span>9♠</span><span>10♣</span></div></div></div><p>结算后点数最高的两张牌留在牌河，其余牌收缩进入弃牌堆。下一手使用上次参与过的牌即可触发连锁。</p></section>
+    <section class="pact-rule"><h3><span>04</span> 红与黑赌约图例</h3><div class="pact-example"><div class="color-hand red-hand"><div class="example-cards"><span class="red">7♥</span><span class="red">7♦</span><span class="red">A♥</span></div><b>红色占优</b></div><i>交替<br>＋倍率</i><div class="color-hand black-hand"><div class="example-cards"><span>9♠</span><span>9♣</span><span>K♠</span></div><b>黑色占优</b></div></div><p>红色占优与黑色占优的牌型交替打出会提高倍率；连续使用同一种颜色则降低倍率。</p></section>
   </div>
   <div class="shortcut-strip"><span><kbd>1–5</kbd> 选牌</span><span><kbd>D</kbd> 弃牌</span><span><kbd>Enter</kbd> 结算</span><span><kbd>Esc</kbd> 关闭</span></div>
 </app-game-dialog>
