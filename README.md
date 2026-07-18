@@ -1,86 +1,211 @@
 # 十三号牌桌 · Table 13 Mini
 
-一款以 **七格牌河、扑克战斗和共享牌连锁** 为核心的 Angular 浏览器肉鸽游戏样品。
+一款以 **七格共享牌河、扑克战斗和留牌连锁** 为核心的浏览器肉鸽游戏。
 
-## 技术栈
+玩家需要将手牌放入七格牌河，组成扑克牌型攻击敌人，并利用结算后留下的关键牌连续构筑下一手。每局要依次击败三名拥有不同攻击强度与作弊能力的赌客。
 
-- Angular 17 Standalone Components
-- TypeScript 5.4
-- Angular Signals 状态管理
-- SCSS 组件样式
-- Cloudflare Workers Static Assets
+> 一张牌，不只组成一手牌。
 
-仓库不提交 `node_modules`、构建缓存或手工生成的锁文件。本次迁移环境未完成本地依赖安装，因此拉取项目后请先生成自己的 `package-lock.json`：
+## 核心玩法
+
+### 七格共享牌河
+
+- 使用标准 52 张扑克牌。
+- 牌桌中央共有 7 个牌位。
+- 玩家可以将手牌放入空位，也可以替换牌河中的现有卡牌。
+- 牌河达到 5 张后，系统会从中自动选择最强的五张组合。
+
+### 回合与行动
+
+- 每回合获得 2 次行动。
+- 放置、替换或弃掉一张手牌都会消耗 1 次行动。
+- 行动耗尽且牌河尚未形成牌型时，敌人自动行动并进入下一回合。
+- 牌型一旦成立，玩家可以立即结算，不必耗尽剩余行动。
+- 敌人行动后，手牌补满并恢复行动次数。
+
+### 牌型效果
+
+| 牌型 | 基础筹码 | 附加效果 |
+|---|---:|---|
+| 高牌 | 5 | 基础攻击 |
+| 对子 | 8 | 获得 6 点护盾 |
+| 两对 | 12 | 获得 10 点护盾 |
+| 三条 | 16 | 强力单次攻击 |
+| 顺子 | 20 | 适合建立连续牌型 |
+| 同花 | 24 | 根据红黑占优获得额外效果 |
+| 葫芦 | 28 | 高额攻击 |
+| 四条 | 34 | 极高攻击 |
+| 同花顺 | 42 | 当前版本最高基础筹码 |
+
+游戏内的“规则”界面提供每种牌型的实际扑克牌图例。
+
+### 留牌与连锁
+
+每次结算后：
+
+1. 参与牌型的五张牌中，点数最高的两张留在牌河。
+2. 其余三张牌收缩并进入弃牌堆。
+3. 下一手如果继续使用上一手参与过的牌，就会提高连锁倍率。
+4. 连锁越高，最终造成的伤害越高。
+
+### 红与黑赌约
+
+本局默认赌约为“红与黑”：
+
+- 红色牌占多数时，牌型视为红色占优。
+- 黑色牌占多数时，牌型视为黑色占优。
+- 交替打出红色与黑色占优牌型，可以额外提高倍率。
+- 连续打出相同颜色会降低倍率。
+
+## 当前游戏内容
+
+- 三场连续赌客战斗：催债人、缺脸侍者和作弊魔术师。
+- 敌人生命、攻击意图、护盾、筹码和伤害结算。
+- 电影化开始界面、帷幕退场动画和 `Enter` 快速入席。
+- 完整图解规则手册，包含回合、牌型、连锁和赌约示例。
+- 按花色分组的实时牌组档案。
+- 牌型计分、保留回弹和弃牌收缩动画。
+- 全屏沉浸模式和游戏内安全退出确认。
+- 桌面、平板和手机响应式布局。
+- 移动端大牌横向滑动、居中吸附和安全区适配。
+- 原创 XIII 标签页图标和 Web App Manifest。
+
+## 操作方式
+
+### 鼠标与触摸
+
+1. 选择一张手牌。
+2. 点击牌河中的空位或已有卡牌。
+3. 牌型成立后点击“打出牌型”。
+4. 也可以选择手牌后点击“弃牌”。
+
+### 键盘
+
+| 按键 | 操作 |
+|---|---|
+| `1`–`5` | 选择对应手牌 |
+| `D` | 弃掉选中的牌 |
+| `Enter` | 开始游戏或结算牌型 |
+| `Esc` | 关闭规则、牌组或确认窗口 |
+
+## 本地开发
+
+### 环境要求
+
+- Node.js 18 或更高版本
+- npm、Bun 或其他兼容的包管理器
+
+### 安装与运行
 
 ```bash
 npm install
 npm start
 ```
 
-生产构建：
+默认开发地址由 Angular CLI 输出，通常为：
+
+```text
+http://localhost:4200
+```
+
+### 测试
+
+```bash
+npm test
+```
+
+牌型引擎包含 A2345 小顺子、皇家同花顺、四条及同类牌型大小比较等测试。
+
+### 生产构建
 
 ```bash
 npm run build
 ```
 
-构建输出位于 `dist/table-13-mini/browser`。
+构建产物位于：
 
-## 当前玩法
+```text
+dist/table-13-mini/browser
+```
 
-- 标准 52 张牌与七格共享牌河
-- 每回合 2 次放置、替换或弃牌行动；行动耗尽且牌河未成型时自动进入敌人回合
-- 自动识别并选择最强五张牌型
-- 对子提供护盾，同花附加花色效果
-- 共享卡牌建立连锁倍率，结算时两张高点数牌保留、其余牌收缩进入弃牌堆
-- “红与黑”赌约奖励红黑交替出牌
-- 三名连续敌人与不同攻击强度
-- 电影化开始界面、Enter 快速入席、GitHub 项目入口和帷幕退场动画
-- 开始页沉浸模式与游戏内安全退出确认
-- Workers Static Assets 浏览器缓存规则：入口始终重新验证，哈希脚本与样式长期缓存
-- 规则、牌组等重型弹窗按需创建；牌组关闭后释放快照，后台标签暂停动画
-- 可展开的图解规则手册：牌型、回合流程、连锁与红黑赌约均配有扑克牌图例
-- 按花色分组的实时牌组档案
-- 放大的共享牌河；移动端采用大牌横向滑动与居中吸附
-- 原创 XIII 浏览器标签页图标
-- 移动端动态视口、安全区适配及全屏沉浸模式
-- 桌面和移动端响应式牌桌
-- 键盘快捷键：`1–5`、`D`、`Enter`、`Esc`
+## 技术栈
 
-## Angular 架构
+- Angular 17 Standalone Components
+- TypeScript 5.4
+- Angular Signals 状态管理
+- Angular 新控制流语法 `@if` / `@for`
+- SCSS 组件样式
+- Cloudflare Workers Static Assets
+
+仓库不会提交 `node_modules`、Angular 构建缓存或生产构建产物。
+
+## 项目结构
 
 ```text
 src/app/
 ├── components/
-│   ├── playing-card/
-│   └── game-dialog/
+│   ├── game-dialog/       # 规则、牌组和确认窗口
+│   └── playing-card/      # 扑克牌组件
 ├── content/
-│   └── enemies.ts
+│   └── enemies.ts         # 敌人配置
 ├── core/
-│   ├── models/
-│   ├── poker/
-│   └── state/
+│   ├── models/            # 游戏类型定义
+│   ├── poker/             # 牌型识别与比较
+│   └── state/             # Signals 游戏状态与战斗流程
 └── screens/
-    └── battle/
+    └── battle/            # 开始界面与主牌桌
 ```
 
 ## 部署到 Cloudflare Workers
 
-安装依赖并登录 Cloudflare 后：
-
-```bash
-npm run deploy
-```
-
-`npm run deploy` 会通过 `predeploy` 自动先执行 Angular 生产构建，再调用 Wrangler 上传 `dist/table-13-mini/browser`。
-
-在 Cloudflare Workers Builds 中请设置：
+项目使用 Workers Static Assets，资源目录配置为：
 
 ```text
-Build command:  （留空）
+dist/table-13-mini/browser
+```
+
+### 方式一：分开构建与部署（推荐）
+
+在 Cloudflare Workers Builds 中设置：
+
+```text
+Build command: npm run build
+Deploy command: npx wrangler deploy
+```
+
+### 方式二：使用 npm 生命周期
+
+也可以设置：
+
+```text
+Build command:  留空
 Deploy command: npm run deploy
 ```
 
-不要将 Deploy command 单独填写为 `npx wrangler deploy`，否则 Angular 构建产物尚未生成，Wrangler 会提示 `assets.directory` 不存在。
+`npm run deploy` 会自动先运行 `predeploy` 中的 Angular 构建，再调用 Wrangler。
+
+不要在没有构建步骤的情况下单独运行 `npx wrangler deploy`，否则 `dist/table-13-mini/browser` 尚未生成，Wrangler 会报告 `assets.directory` 不存在。
+
+## 缓存与性能
+
+- `index.html` 每次访问时重新验证，确保及时获得新版入口。
+- 带内容哈希的 JavaScript 和 CSS 缓存一年，并标记为 `immutable`。
+- favicon、图片和字体等稳定资源使用长期浏览器缓存。
+- Web App Manifest 和普通 JSON 使用短期缓存并重新验证。
+- 规则、牌组和确认窗口仅在打开时创建，关闭后销毁 DOM。
+- 牌组内容打开时生成快照，关闭后释放。
+- 标签页进入后台后暂停非必要动画并隐藏高开销合成层。
+- 移动端降低颗粒、暗角和背景模糊强度。
+
+缓存规则位于：
+
+```text
+public/_headers
+```
+
+## 项目地址
+
+https://github.com/steamaa1/Table-13-Mini
 
 ## License
 
